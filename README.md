@@ -15,6 +15,8 @@ cd blog-api
 cd secrets
 mv django_secret_key.example django_secret_key
 mv db_password.example db_password
+mv jwt-private.pem.example jwt-private.pem
+mv jwt-public.pem.example jwt-public.pem
 cd ..
 ```
 
