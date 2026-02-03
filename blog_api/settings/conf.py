@@ -82,6 +82,9 @@ class Settings:
         email_length: int = 255
         avatars_dir: Path = Path("users/avatars")
 
+        first_name_max_length = 50
+        last_name_max_length = 50
+
     @dataclass
     class Database:
         engine: str = config("BLOG_DB_ENGINE")
