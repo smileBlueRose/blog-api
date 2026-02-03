@@ -1,46 +1,52 @@
 # blog-api
-
 ### Entity Relation Diagram
 ![Blog API ERD](docs/images/blog-api-erd.png)
 
 ## Installation and Setup
-### 1. Clone and navigate to project
+
+### 1. Clone repository
 ```bash
 git clone https://github.com/smileBlueRose/blog-api
 cd blog-api
 ```
-### 2. Rename secrets
+
+### 2. Rename secret files
 ```bash
 cd secrets
 mv django_secret_key.example django_secret_key
+mv db_password.example db_password
 cd ..
 ```
 
-### 3. Install dependencies and run server
+### 3. Install dependencies
 ```bash
 cd blog_api
 uv sync
+```
+
+### 4. Run server
+```bash
 uv run manage.py runserver
 ```
 
 ## PostgreSQL Setup (Optional)
-If you want to use PostgreSQL instead of SQLite:
 
-### 1. Configure secrets
+By default, the project uses SQLite. To use PostgreSQL instead, complete steps 1-3 above, then:
+
+### 4. Enable PostgreSQL engine
+Add `BLOG_DB_ENGINE=postgresql` to `env_files/.env.dev`:
 ```bash
-cd secrets
-mv db_password.example db_password
-cd ..
+# It's considered you are at blog-api/
+echo "BLOG_DB_ENGINE=postgresql" >> env_files/.env.dev
 ```
-### 2. Add PostgreSQL engine variable
-Add `BLOG_DB_ENGINE=postgresql` to `env_files/.env.dev`
 
-### 3. Start database
+### 5. Start PostgreSQL container
 ```bash
 sudo docker compose --env-file .env.template up -d
 ```
-### 4. Install dependencies and run server
+
+### 6. Run server
 ```bash
 cd blog_api
-uv sync
 uv run manage.py runserver
+```
