@@ -69,8 +69,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     id = UUIDField(primary_key=True, default=uuid4)
 
     email = EmailField(max_length=settings.users.email_length, unique=True, null=False)
-    first_name = CharField(max_length=50, null=False)
-    last_name = CharField(max_length=50, null=False)
+    first_name = CharField(max_length=settings.users.first_name_max_length, null=False)
+    last_name = CharField(max_length=settings.users.last_name_max_length, null=False)
 
     is_active = BooleanField(default=True, null=False)
     is_staff = BooleanField(default=False, null=False)
@@ -78,7 +78,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = DateTimeField(default=timezone.now)
     avatar = ImageField(upload_to=settings.users.avatars_dir, blank=True, null=True)
 
-    objects = UserManager()
+    objects: UserManager = UserManager()
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["first_name", "last_name"]

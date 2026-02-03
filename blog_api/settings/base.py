@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from .conf import DEBUG, PROJECT_DIR, SECRET_KEY, settings  # noqa: F401
+from .conf import DEBUG, PROJECT_DIR, SECRET_KEY, SIMPLE_JWT, settings  # noqa: F401
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -14,6 +14,9 @@ DJANGO_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
 ]
 PROJECT_APPS = [
     "apps.users.apps.UsersConfig",
@@ -52,12 +55,14 @@ WSGI_APPLICATION = "settings.wsgi.application"
 
 if settings.db.engine == "postgresql":
     database_config = {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": settings.db.name,
-        "USER": settings.db.user,
-        "PASSWORD": settings.db.password,
-        "HOST": settings.db.host,
-        "PORT": settings.db.port,
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": settings.db.name,
+            "USER": settings.db.user,
+            "PASSWORD": settings.db.password,
+            "HOST": settings.db.host,
+            "PORT": settings.db.port,
+        }
     }
 elif settings.db.engine == "sqlite3":
     database_config = {
@@ -69,7 +74,7 @@ elif settings.db.engine == "sqlite3":
 else:
     raise RuntimeError(f"Unsupported database engine: {settings.db.engine}")
 
-DATABASE = database_config
+DATABASES = database_config
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -85,6 +90,13 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    )
+}
+
 
 PASSWORD_HASHERS: list[str] = ["django.contrib.auth.hashers.Argon2PasswordHasher"]
 
