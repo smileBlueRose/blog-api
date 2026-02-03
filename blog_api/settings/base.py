@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from .conf import DEBUG, PROJECT_DIR, SECRET_KEY, settings  # noqa: F401
+from .conf import DEBUG, PROJECT_DIR, SECRET_KEY, SIMPLE_JWT, settings  # noqa: F401
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -14,6 +14,9 @@ DJANGO_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
 ]
 PROJECT_APPS = [
     "apps.users.apps.UsersConfig",
@@ -87,6 +90,13 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    )
+}
+
 
 PASSWORD_HASHERS: list[str] = ["django.contrib.auth.hashers.Argon2PasswordHasher"]
 
