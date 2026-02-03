@@ -52,12 +52,14 @@ WSGI_APPLICATION = "settings.wsgi.application"
 
 if settings.db.engine == "postgresql":
     database_config = {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": settings.db.name,
-        "USER": settings.db.user,
-        "PASSWORD": settings.db.password,
-        "HOST": settings.db.host,
-        "PORT": settings.db.port,
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": settings.db.name,
+            "USER": settings.db.user,
+            "PASSWORD": settings.db.password,
+            "HOST": settings.db.host,
+            "PORT": settings.db.port,
+        }
     }
 elif settings.db.engine == "sqlite3":
     database_config = {
@@ -69,7 +71,7 @@ elif settings.db.engine == "sqlite3":
 else:
     raise RuntimeError(f"Unsupported database engine: {settings.db.engine}")
 
-DATABASE = database_config
+DATABASES = database_config
 
 AUTH_PASSWORD_VALIDATORS = [
     {
