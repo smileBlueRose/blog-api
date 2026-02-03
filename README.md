@@ -42,7 +42,7 @@ echo "BLOG_DB_ENGINE=postgresql" >> env_files/.env.dev
 
 ### 5. Start PostgreSQL container
 ```bash
-sudo docker compose --env-file .env.template up -d
+sudo docker compose --env-file env_files/.env.template up -d
 ```
 
 ### 6. Run server
