@@ -50,8 +50,8 @@ TEMPLATES = [
 WSGI_APPLICATION = "settings.wsgi.application"
 
 
-DATABASES = {
-    "default": {
+if settings.db.engine == "postgresql":
+    database_config = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": settings.db.name,
         "USER": settings.db.user,
@@ -59,8 +59,17 @@ DATABASES = {
         "HOST": settings.db.host,
         "PORT": settings.db.port,
     }
-}
+elif settings.db.engine == "sqlite3":
+    database_config = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": "db.sqlite3",
+        }
+    }
+else:
+    raise RuntimeError(f"Unsupported database engine: {settings.db.engine}")
 
+DATABASE = database_config
 
 AUTH_PASSWORD_VALIDATORS = [
     {

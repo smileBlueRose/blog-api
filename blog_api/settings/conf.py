@@ -6,15 +6,18 @@ from decouple import RepositoryEnv  # type: ignore
 from decouple import config as decouple_config
 
 PROJECT_DIR = Path(__file__).resolve().parent.parent.parent
+ENV_FILES_DIR = PROJECT_DIR / "env_files"
 
 environment: str = cast(str, decouple_config("ENV", default="dev"))
 
-env_template_path = PROJECT_DIR / ".env.template"
+env_template_path = ENV_FILES_DIR / ".env.template"
 
 if environment == "dev":
-    env_path = PROJECT_DIR / ".env.dev"
+    env_path = ENV_FILES_DIR / ".env.dev"
 elif environment == "test":
-    env_path = PROJECT_DIR / ".env.test"
+    env_path = ENV_FILES_DIR / ".env.test"
+elif environment == "light":
+    env_path = ENV_FILES_DIR / ".env.light"
 else:
     raise ValueError("ENV environment variable is not set. Use 'dev' or 'test'.")
 
@@ -78,6 +81,8 @@ class Settings:
 
     @dataclass
     class Database:
+        engine: str = config("BLOG_DB_ENGINE")
+
         user: str = config("BLOG_DB_USER")
         name: str = config("BLOG_DB_NAME")
         host: str = config("BLOG_DB_HOST")
@@ -93,4 +98,3 @@ class Settings:
 
 
 settings = Settings()
-print(settings)
