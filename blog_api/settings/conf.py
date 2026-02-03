@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import timedelta
 from pathlib import Path
 from typing import Any, Callable, cast
 
@@ -66,6 +67,8 @@ SECRET_KEY: str = Path(secret_key_path).read_text()
 DEBUG: bool = config(
     "DEBUG", default=False, cast=lambda x: x.lower() in ("true", "yes", "1")
 )
+
+
 # ==============================
 # ==== Application Settings ====
 # ==============================
@@ -93,8 +96,41 @@ class Settings:
             password_file = PROJECT_DIR / Path(config("BLOG_DB_PASSWORD_FILE"))
             return password_file.read_text()
 
+    @dataclass
+    class Auth:
+        @dataclass
+        class JWT:
+            access_token_lifetime = timedelta(minutes=15)
+            refresh_token_lifetime = timedelta(days=15)
+
+            @property
+            def private_key(self) -> str:
+                private_key_path: Path = PROJECT_DIR / config(
+                    "BLOG_JWT_PRIVATE_KEY_PATH"
+                )
+                return private_key_path.read_text()
+
+            @property
+            def public_key(self) -> str:
+                public_key_path: Path = PROJECT_DIR / config("BLOG_JWT_PUBLIC_KEY_PATH")
+                return public_key_path.read_text()
+
+        jwt = JWT()
+
     users = Users()
     db = Database()
+    auth = Auth()
 
 
 settings = Settings()
+
+
+SIMPLE_JWT = {
+    "ALGORITHM": "RS256",
+    "SIGNING_KEY": settings.auth.jwt.private_key,
+    "VERIFYING_KEY": settings.auth.jwt.public_key,
+    "ACCESS_TOKEN_LIFETIME": settings.auth.jwt.access_token_lifetime,
+    "REFRESH_TOKEN_LIFETIME": settings.auth.jwt.refresh_token_lifetime,
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+}

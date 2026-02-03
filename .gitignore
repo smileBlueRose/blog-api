@@ -9,10 +9,14 @@ wheels/
 # Virtual environments
 .venv
 
+# IDE files
+.vscode
+
 # Secrets
 /secrets/*
 !/secrets/*.example
 
 # Databases
 *.sqlite3
+*.sql
 
