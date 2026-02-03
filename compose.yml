@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:16.11-alpine
+    environment:
+      POSTGRES_USER: ${BLOG_DB_USER}
+      POSTGRES_DB: ${BLOG_DB_NAME}
+      PGTZ: UTC
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    ports:
+      - "$BLOG_DB_PORT:5432"
+    container_name: ${BLOG_DB_CNT_NAME}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+secrets:
+  db_password:
+    file: ${BLOG_DB_PASSWORD_FILE}
+
+volumes:
+  db_data:
+
