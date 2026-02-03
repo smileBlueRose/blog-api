@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, cast
 
@@ -62,3 +63,21 @@ SECRET_KEY: str = Path(secret_key_path).read_text()
 DEBUG: bool = config(
     "DEBUG", default=False, cast=lambda x: x.lower() in ("true", "yes", "1")
 )
+# ==============================
+# ==== Application Settings ====
+# ==============================
+
+
+@dataclass
+class Settings:
+
+    @dataclass
+    class Users:
+        email_length: int = 255
+        avatars_dir: Path = Path("users/avatars")
+
+    users = Users()
+
+
+settings = Settings()
+print(settings)

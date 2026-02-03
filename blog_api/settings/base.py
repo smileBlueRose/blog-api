@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from .conf import DEBUG, SECRET_KEY  # noqa: F401
+from .conf import DEBUG, PROJECT_DIR, SECRET_KEY  # noqa: F401
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -73,9 +73,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+PASSWORD_HASHERS: list[str] = ["django.contrib.auth.hashers.Argon2PasswordHasher"]
 
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 STATIC_URL = "static/"
+
+MEDIA_ROOT = PROJECT_DIR / "media"
+MEDIA_URL = "/media/"
+
+AUTH_USER_MODEL = "users.User"
