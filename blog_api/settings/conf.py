@@ -76,7 +76,20 @@ class Settings:
         email_length: int = 255
         avatars_dir: Path = Path("users/avatars")
 
+    @dataclass
+    class Database:
+        user: str = config("BLOG_DB_USER")
+        name: str = config("BLOG_DB_NAME")
+        host: str = config("BLOG_DB_HOST")
+        port: int = config("BLOG_DB_PORT", cast=int)
+
+        @property
+        def password(self) -> str:
+            password_file = PROJECT_DIR / Path(config("BLOG_DB_PASSWORD_FILE"))
+            return password_file.read_text()
+
     users = Users()
+    db = Database()
 
 
 settings = Settings()

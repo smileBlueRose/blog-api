@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from .conf import DEBUG, PROJECT_DIR, SECRET_KEY  # noqa: F401
+from .conf import DEBUG, PROJECT_DIR, SECRET_KEY, settings  # noqa: F401
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -52,8 +52,12 @@ WSGI_APPLICATION = "settings.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": settings.db.name,
+        "USER": settings.db.user,
+        "PASSWORD": settings.db.password,
+        "HOST": settings.db.host,
+        "PORT": settings.db.port,
     }
 }
 
