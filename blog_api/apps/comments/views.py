@@ -24,10 +24,7 @@ class CommentViewSet(ViewSet):
         )
 
     def create(self, request: Request, post_slug: str) -> Response:
-        try:
-            post = Post.objects.get(slug=post_slug)
-        except Post.DoesNotExist:
-            return Response(f"Post with the slug '{post_slug}' not found")
+        post = Post.objects.get(slug=post_slug)
 
         body: str = sanitize_html_input(
             require_field(cast(dict[str, Any], request.data), "body")
