@@ -20,6 +20,7 @@ DJANGO_APPS = [
 ]
 PROJECT_APPS = [
     "apps.users.apps.UsersConfig",
+    "apps.posts.apps.PostsConfig",
     "apps.categories.apps.CategoriesConfig",
     "apps.comments.apps.CommentsConfig",
 ]
