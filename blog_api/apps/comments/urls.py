@@ -9,6 +9,6 @@ urlpatterns = [
     ),
     path(
         "posts/<slug:post_slug>/comments/<int:comment_id>/",
-        CommentViewSet.as_view({"delete": "delete"}),
+        CommentViewSet.as_view({"delete": "delete", "patch": "partial_update"}),
     ),
 ]

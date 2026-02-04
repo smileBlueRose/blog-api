@@ -53,3 +53,20 @@ class CommentViewSet(ViewSet):
         CommentService.check_permission_to_delete(user=request.user, comment=comment)
 
         return Response(status=HTTP_204_NO_CONTENT)
+
+    def partial_update(self, request: Request, post_slug, comment_id: int) -> Response:
+        comment = Comment.objects.get(pk=comment_id)
+        if post_slug != comment.post.slug:
+            return Response(
+                {"error": "Comment doesnt' belong to this post"}, status=404
+            )
+
+        CommentService.check_permission_to_update(user=request.user, comment=comment)
+
+        body: str = sanitize_html_input(
+            require_field(cast(dict[str, Any], request.data), "body")
+        )
+        comment.body = body
+        comment.save()
+
+        return Response(status=HTTP_204_NO_CONTENT)

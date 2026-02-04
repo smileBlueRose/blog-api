@@ -12,3 +12,12 @@ class CommentService:
             raise PermissionException(
                 f"User {user.email} doesn't have permissions to delete this comment"
             )
+
+    @staticmethod
+    def check_permission_to_update(user: User, comment: Comment) -> None:
+        """:raises PermissionException:"""
+
+        if not (user == comment.author):
+            raise PermissionException(
+                f"User {user.email} doesn't have permissions to update this comment"
+            )
