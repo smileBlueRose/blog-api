@@ -47,6 +47,28 @@ class PostViewSet(ViewSet):
         post = serializer.save(author=request.user)
 
         return Response(PostRetrieveSerializer(post).data, status=HTTP_201_CREATED)
+
+    def partial_update(self, request: Request, pk: int) -> Response:
+        cleaned_data = sanitize_data(cast(dict[str, Any], request.data))
+
+        try:
+            post = Post.objects.get(pk=pk)
+        except Post.DoesNotExist:
+            return Response(
+                {"error": f"Post with pk '{pk}' not found"}, HTTP_404_NOT_FOUND
+            )
+        try:
+            PostService.check_permissions_to_update(post=post, user=request.user)
+        except PermissionException as e:
+            return Response({"error": str(e)}, status=HTTP_403_FORBIDDEN)
+
+        serializer = PostCreateSerializer(
+            instance=post, data=cleaned_data, partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        post = serializer.save()
+
+        return Response(PostRetrieveSerializer(post).data, status=HTTP_200_OK)
         except Post.DoesNotExist:
             return Response(
                 {"error": f"Post with pk '{pk}' not found"}, HTTP_404_NOT_FOUND
