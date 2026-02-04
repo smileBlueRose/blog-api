@@ -1,6 +1,6 @@
 from typing import Any, Iterable
 
-from common.get_required_field import get_required_field
+from common.get_required_field import require_field
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
 from settings.conf import settings
@@ -22,7 +22,7 @@ class UserService:
             ValueError: might be raised by sanitize_data()
         """
         fields = ["email", "password", "first_name", "last_name"]
-        schema: dict[str, str] = {i: str(get_required_field(data, i)) for i in fields}
+        schema: dict[str, str] = {i: str(require_field(data, i)) for i in fields}
 
         email_validator(value=schema["email"])
 
