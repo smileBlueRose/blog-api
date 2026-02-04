@@ -77,7 +77,6 @@ DEBUG: bool = config(
 @dataclass
 class Settings:
 
-    @dataclass
     class Users:
         email_length: int = 255
         avatars_dir: Path = Path("users/avatars")
@@ -118,18 +117,22 @@ class Settings:
                 public_key_path: Path = PROJECT_DIR / config("BLOG_JWT_PUBLIC_KEY_PATH")
                 return public_key_path.read_text()
 
-        @dataclass
         class Password:
             min_length = 8
             max_length = 128
             min_entropy = 50
 
         jwt = JWT()
-        password = Password()
+        password = Password
 
-    users = Users()
+    class Post:
+        title_max_length = 200
+        body_max_length = 5000
+
+    users = Users
     db = Database()
     auth = Auth()
+    post = Post
 
 
 settings = Settings()

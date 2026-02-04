@@ -44,6 +44,8 @@ def sanitize_data(data: dict[str, Any], max_depth: int = 10) -> dict[str, Any]:
 
     result = walk_and_sanitize(data)
 
-    assert isinstance(result, dict), "Sanitized data is not a dictionary"
+    assert isinstance(
+        result, dict
+    ), f"Sanitized data is not a dictionary. Received {type(result)} type"
 
     return result
