@@ -69,7 +69,20 @@ class PostViewSet(ViewSet):
         post = serializer.save()
 
         return Response(PostRetrieveSerializer(post).data, status=HTTP_200_OK)
+
+    def delete(self, request: Request, pk: int) -> Response:
+        try:
+            post = Post.objects.get(pk=pk)
         except Post.DoesNotExist:
             return Response(
                 {"error": f"Post with pk '{pk}' not found"}, HTTP_404_NOT_FOUND
             )
+
+        try:
+            PostService.check_permissions_to_delete(post=post, user=request.user)
+        except PermissionException as e:
+            return Response({"error": str(e)}, status=HTTP_403_FORBIDDEN)
+
+        post.delete()
+
+        return Response(status=HTTP_204_NO_CONTENT)
