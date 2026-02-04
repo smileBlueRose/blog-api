@@ -1,6 +1,5 @@
 from typing import Any, cast
 
-from common.exceptions import PermissionException
 from common.security import sanitize_data
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.request import Request
@@ -9,8 +8,6 @@ from rest_framework.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
     HTTP_204_NO_CONTENT,
-    HTTP_403_FORBIDDEN,
-    HTTP_404_NOT_FOUND,
 )
 from rest_framework.viewsets import ViewSet
 
@@ -32,12 +29,8 @@ class PostViewSet(ViewSet):
         return Response(PostRetrieveSerializer(posts, many=True).data, HTTP_200_OK)
 
     def retrieve(self, request: Request, slug: str) -> Response:
-        try:
-            post = Post.objects.get(slug=slug)
-        except Post.DoesNotExist:
-            return Response(
-                {"error": f"Post with slug '{slug}' not found"}, HTTP_404_NOT_FOUND
-            )
+        post = Post.objects.get(slug=slug)
+
         return Response(PostRetrieveSerializer(post).data, HTTP_200_OK)
 
     def create(self, request: Request) -> Response:
@@ -51,17 +44,9 @@ class PostViewSet(ViewSet):
 
     def partial_update(self, request: Request, slug: str) -> Response:
         cleaned_data = sanitize_data(cast(dict[str, Any], request.data))
+        post = Post.objects.get(slug=slug)
 
-        try:
-            post = Post.objects.get(slug=slug)
-        except Post.DoesNotExist:
-            return Response(
-                {"error": f"Post with slug '{slug}' not found"}, HTTP_404_NOT_FOUND
-            )
-        try:
-            PostService.check_permissions_to_update(post=post, user=request.user)
-        except PermissionException as e:
-            return Response({"error": str(e)}, status=HTTP_403_FORBIDDEN)
+        PostService.check_permissions_to_update(post=post, user=request.user)
 
         serializer = PostCreateSerializer(
             instance=post, data=cleaned_data, partial=True
@@ -72,17 +57,8 @@ class PostViewSet(ViewSet):
         return Response(PostRetrieveSerializer(post).data, status=HTTP_200_OK)
 
     def delete(self, request: Request, slug: str) -> Response:
-        try:
-            post = Post.objects.get(slug=slug)
-        except Post.DoesNotExist:
-            return Response(
-                {"error": f"Post with the slug '{slug}' not found"}, HTTP_404_NOT_FOUND
-            )
-
-        try:
-            PostService.check_permissions_to_delete(post=post, user=request.user)
-        except PermissionException as e:
-            return Response({"error": str(e)}, status=HTTP_403_FORBIDDEN)
+        post = Post.objects.get(slug=slug)
+        PostService.check_permissions_to_delete(post=post, user=request.user)
 
         post.delete()
 
