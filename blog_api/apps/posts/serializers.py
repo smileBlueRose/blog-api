@@ -1,9 +1,32 @@
-from rest_framework.serializers import ModelSerializer
+from apps.categories.models import Category
+from rest_framework.serializers import (
+    ModelSerializer,
+    PrimaryKeyRelatedField,
+)
 
 from .models import Post
 
 
-class PostSerializer(ModelSerializer):
+class PostCreateSerializer(ModelSerializer):
+    category_id = PrimaryKeyRelatedField(
+        queryset=Category.objects.all(), source="category"
+    )
+
     class Meta:
         model = Post
-        fields = "__all__"
+        fields = ("title", "body", "status", "category_id")
+
+
+class PostRetrieveSerializer(ModelSerializer):
+    class Meta:
+        model = Post
+        fields = (
+            "id",
+            "title",
+            "body",
+            "status",
+            "created_at",
+            "updated_at",
+            "author_id",
+            "category_id",
+        )
