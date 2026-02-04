@@ -1,4 +1,13 @@
-from django.db.models import CASCADE, DateTimeField, ForeignKey, Model, TextField
+from typing import ClassVar, Self
+
+from django.db.models import (
+    CASCADE,
+    DateTimeField,
+    ForeignKey,
+    Manager,
+    Model,
+    TextField,
+)
 from django.utils import timezone
 
 
@@ -12,3 +21,5 @@ class Comment(Model):
         db_table = "comments"
         verbose_name = "comment"
         verbose_name_plural = "comments"
+
+    objects: ClassVar[Manager[Self]]
