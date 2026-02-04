@@ -23,6 +23,7 @@ class PostRetrieveSerializer(ModelSerializer):
         fields = (
             "id",
             "title",
+            "slug",
             "body",
             "status",
             "created_at",

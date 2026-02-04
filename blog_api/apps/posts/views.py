@@ -20,6 +20,7 @@ from .service import PostService
 
 
 class PostViewSet(ViewSet):
+    lookup_field = "slug"
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def list(self, request: Request) -> Response:
@@ -30,12 +31,12 @@ class PostViewSet(ViewSet):
 
         return Response(PostRetrieveSerializer(posts, many=True).data, HTTP_200_OK)
 
-    def retrieve(self, request: Request, pk: int) -> Response:
+    def retrieve(self, request: Request, slug: str) -> Response:
         try:
-            post = Post.objects.get(pk=pk)
+            post = Post.objects.get(slug=slug)
         except Post.DoesNotExist:
             return Response(
-                {"error": f"Post with pk '{pk}' not found"}, HTTP_404_NOT_FOUND
+                {"error": f"Post with slug '{slug}' not found"}, HTTP_404_NOT_FOUND
             )
         return Response(PostRetrieveSerializer(post).data, HTTP_200_OK)
 
@@ -48,14 +49,14 @@ class PostViewSet(ViewSet):
 
         return Response(PostRetrieveSerializer(post).data, status=HTTP_201_CREATED)
 
-    def partial_update(self, request: Request, pk: int) -> Response:
+    def partial_update(self, request: Request, slug: str) -> Response:
         cleaned_data = sanitize_data(cast(dict[str, Any], request.data))
 
         try:
-            post = Post.objects.get(pk=pk)
+            post = Post.objects.get(slug=slug)
         except Post.DoesNotExist:
             return Response(
-                {"error": f"Post with pk '{pk}' not found"}, HTTP_404_NOT_FOUND
+                {"error": f"Post with slug '{slug}' not found"}, HTTP_404_NOT_FOUND
             )
         try:
             PostService.check_permissions_to_update(post=post, user=request.user)
@@ -70,12 +71,12 @@ class PostViewSet(ViewSet):
 
         return Response(PostRetrieveSerializer(post).data, status=HTTP_200_OK)
 
-    def delete(self, request: Request, pk: int) -> Response:
+    def delete(self, request: Request, slug: str) -> Response:
         try:
-            post = Post.objects.get(pk=pk)
+            post = Post.objects.get(slug=slug)
         except Post.DoesNotExist:
             return Response(
-                {"error": f"Post with pk '{pk}' not found"}, HTTP_404_NOT_FOUND
+                {"error": f"Post with the slug '{slug}' not found"}, HTTP_404_NOT_FOUND
             )
 
         try:
