@@ -1,3 +1,5 @@
+from typing import ClassVar, Self
+
 from apps.users.models import User
 from autoslug import AutoSlugField
 from django.db.models import (
@@ -6,6 +8,7 @@ from django.db.models import (
     CharField,
     DateTimeField,
     ForeignKey,
+    Manager,
     Model,
     TextField,
 )
@@ -27,3 +30,5 @@ class Post(Model):
         db_table = "posts"
         verbose_name = "post"
         verbose_name_plural = "posts"
+
+    objects: ClassVar[Manager[Self]]
