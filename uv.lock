@@ -119,6 +119,7 @@ dependencies = [
     { name = "pillow" },
     { name = "psycopg", extra = ["binary"] },
     { name = "python-decouple" },
+    { name = "redis" },
     { name = "zxcvbn" },
 ]
 
@@ -144,6 +145,7 @@ requires-dist = [
     { name = "pillow", specifier = ">=12.1.0" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.3.2" },
     { name = "python-decouple", specifier = ">=3.8" },
+    { name = "redis", specifier = ">=7.1.0" },
     { name = "zxcvbn", specifier = ">=4.5.0" },
 ]
 

@@ -17,6 +17,7 @@ dependencies = [
     "pillow>=12.1.0",
     "psycopg[binary]>=3.3.2",
     "python-decouple>=3.8",
+    "redis>=7.1.0",
     "zxcvbn>=4.5.0",
 ]
 
