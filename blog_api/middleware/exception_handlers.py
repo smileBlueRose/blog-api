@@ -1,9 +1,11 @@
+from logging import getLogger
 from typing import Any
 
 from apps.users.exceptions import UserAlreadyExists
 from common.exceptions import MissingRequiredField, PermissionException
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import ValidationError
+from django_ratelimit.exceptions import Ratelimited
 from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
@@ -13,6 +15,8 @@ from rest_framework.status import (
     HTTP_422_UNPROCESSABLE_ENTITY,
 )
 from rest_framework.views import exception_handler
+
+logger = getLogger(__name__)
 
 
 def custom_exception_handler(
@@ -38,5 +42,14 @@ def custom_exception_handler(
 
     if isinstance(exc, PermissionException):
         return Response({"error": str(exc)}, status=HTTP_403_FORBIDDEN)
+
+    if isinstance(exc, Ratelimited):
+        request = context["request"]
+        ip = request.META.get("REMOTE_ADDR")
+        logger.warning(
+            f"User with IP {ip} was blocked. "
+            f"Rate limit exceeded for {request.method} {request.path}"
+        )
+        return response
 
     return response
