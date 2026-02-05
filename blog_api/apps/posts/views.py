@@ -1,9 +1,11 @@
 from logging import getLogger
 from typing import Any, cast
 
+from common.clear_cache import clear_cache
 from common.security import sanitize_data
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from django_ratelimit.decorators import ratelimit
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -22,11 +24,16 @@ from .service import PostService
 logger = getLogger(__name__)
 
 
+@method_decorator(ratelimit(key="ip", rate="20/m"), name="create")
 class PostViewSet(ViewSet):
     lookup_field = "slug"
     permission_classes = [IsAuthenticatedOrReadOnly]
 
-    @method_decorator(cache_page(10 * 60, key_prefix="post_list"))
+    def _clear_cache(self) -> None:
+        clear_cache(settings.redis.prefix.post_list)
+        logger.debug("Cache cleared, prefix %s", settings.redis.prefix.post_list)
+
+    @method_decorator(cache_page(60, key_prefix=settings.redis.prefix.post_list))
     def list(self, request: Request) -> Response:
         limit = int(request.query_params.get("limit", 10))
         offset = int(request.query_params.get("offset", 0))
@@ -58,6 +65,8 @@ class PostViewSet(ViewSet):
         post = serializer.save(author=request.user)
         logger.info("Post created, id: %s", post.id)
 
+        self._clear_cache()
+
         return Response(PostRetrieveSerializer(post).data, status=HTTP_201_CREATED)
 
     def partial_update(self, request: Request, slug: str) -> Response:
@@ -83,6 +92,8 @@ class PostViewSet(ViewSet):
         post = serializer.save()
         logger.info("Post updated")
 
+        self._clear_cache()
+
         return Response(PostRetrieveSerializer(post).data, status=HTTP_200_OK)
 
     def delete(self, request: Request, slug: str) -> Response:
@@ -96,5 +107,7 @@ class PostViewSet(ViewSet):
 
         post.delete()
         logger.info("Post deleted")
+
+        self._clear_cache()
 
         return Response(status=HTTP_204_NO_CONTENT)

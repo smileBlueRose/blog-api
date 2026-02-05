@@ -35,3 +35,8 @@ uv sync
 ```bash
 uv run manage.py runserver
 ```
+
+## Comments
+
+### Why I have chosen cache_page?
+I decided to use `cache_page()` because it seems to me to be more flexible. It automatically takes into account the entered query parameters and caches them based on the unique url. Without this, I would have to manually check which query parameters user entered and save different results from views to the redis.

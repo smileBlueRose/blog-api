@@ -144,6 +144,12 @@ class Settings:
         host = "127.0.0.1"
         port = config("BLOG_REDIS_PORT", cast=int)
 
+        class Prefix:
+            post_list = "post_list"
+            comment_list = "comment_list"
+
+        prefix = Prefix
+
     users = Users
     db = Database()
     auth = Auth()
