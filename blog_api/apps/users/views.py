@@ -1,3 +1,5 @@
+from logging import getLogger
+
 from common.security import sanitize_data
 from django.forms import ValidationError
 from rest_framework.request import Request
@@ -10,9 +12,13 @@ from rest_framework.viewsets import ViewSet
 from .serializers import UserSerializer
 from .service import user_service
 
+logger = getLogger(__name__)
+
 
 class UserViewSet(ViewSet):
     def create(self, request: Request) -> Response:
+        logger.info("Creating user")
+
         if not isinstance(request.data, dict):
             raise ValidationError("Request body must be a JSON object")
 
@@ -22,4 +28,6 @@ class UserViewSet(ViewSet):
             raise ValidationError(str(e)) from e
 
         user = user_service.create_user(cleaned_data)
+
+        logger.info("User created")
         return Response(UserSerializer(user).data, status=HTTP_201_CREATED)

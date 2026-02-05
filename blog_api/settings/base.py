@@ -123,6 +123,7 @@ WARNING_LOG_PATH = LOG_DIR / "warning.log"
 ERROR_LOG_PATH = LOG_DIR / "error.log"
 CRITICAL_LOG_PATH = LOG_DIR / "critical.log"
 
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -197,6 +198,10 @@ LOGGING = {
         },
     },
     "loggers": {
+        "django.utils.autoreload": {
+            "level": "WARNING",
+            "propagate": False,
+        },
         "django": {
             "handlers": [
                 "console",

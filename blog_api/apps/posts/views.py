@@ -1,4 +1,4 @@
-import logging
+from logging import getLogger
 from typing import Any, cast
 
 from common.security import sanitize_data
@@ -17,7 +17,7 @@ from .models import Post
 from .serializers import PostCreateSerializer, PostRetrieveSerializer
 from .service import PostService
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class PostViewSet(ViewSet):
