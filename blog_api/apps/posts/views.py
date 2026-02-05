@@ -5,6 +5,7 @@ from common.clear_cache import clear_cache
 from common.security import sanitize_data
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from django_ratelimit.decorators import ratelimit
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -23,6 +24,7 @@ from .service import PostService
 logger = getLogger(__name__)
 
 
+@method_decorator(ratelimit(key="ip", rate="20/m"), name="create")
 class PostViewSet(ViewSet):
     lookup_field = "slug"
     permission_classes = [IsAuthenticatedOrReadOnly]

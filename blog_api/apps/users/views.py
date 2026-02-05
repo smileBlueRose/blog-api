@@ -2,6 +2,8 @@ from logging import getLogger
 
 from common.security import sanitize_data
 from django.forms import ValidationError
+from django.utils.decorators import method_decorator
+from django_ratelimit.decorators import ratelimit
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.status import (
@@ -15,6 +17,7 @@ from .service import user_service
 logger = getLogger(__name__)
 
 
+@method_decorator(ratelimit(key="ip", rate="5/m", method="POST"), name="create")
 class UserViewSet(ViewSet):
     def create(self, request: Request) -> Response:
         logger.info("Creating user")
