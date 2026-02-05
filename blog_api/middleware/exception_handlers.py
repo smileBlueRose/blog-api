@@ -13,6 +13,7 @@ from rest_framework.status import (
     HTTP_404_NOT_FOUND,
     HTTP_409_CONFLICT,
     HTTP_422_UNPROCESSABLE_ENTITY,
+    HTTP_429_TOO_MANY_REQUESTS,
 )
 from rest_framework.views import exception_handler
 
@@ -50,6 +51,9 @@ def custom_exception_handler(
             f"User with IP {ip} was blocked. "
             f"Rate limit exceeded for {request.method} {request.path}"
         )
-        return response
+        return Response(
+            {"detail": "Too many requests. Try again later."},
+            status=HTTP_429_TOO_MANY_REQUESTS,
+        )
 
     return response
