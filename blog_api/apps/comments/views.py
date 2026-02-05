@@ -41,7 +41,9 @@ class CommentViewSet(ViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save(post=self._get_post(post_slug), author=request.user)
 
-        return Response(serializer.data, status=HTTP_201_CREATED)
+        return Response(
+            CommentRetrieveSerializer(comment).data, status=HTTP_201_CREATED
+        )
 
     def delete(self, request: Request, post_slug: str, comment_id: int) -> Response:
         comment = Comment.objects.get(pk=comment_id)
