@@ -41,3 +41,7 @@ uv run manage.py runserver
 
 ### Why I have chosen cache_page?
 I decided to use `cache_page()` because it seems to me to be more flexible. It automatically takes into account the entered query parameters and caches them based on the unique url. Without this, I would have to manually check which query parameters user entered and save different results from views to the redis.
+
+## Postman Collection
+
+[Postman Collection Link](https://starthub-4052.postman.co/workspace/Advanced-Django~761548d9-07fe-461d-8a75-773499ea011e/collection/43041877-c822ae19-8c58-448e-99d2-d5b0396d2686?action=share&creator=43041877)
