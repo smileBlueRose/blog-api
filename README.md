@@ -33,6 +33,7 @@ uv sync
 
 ### 5. Run server
 ```bash
+uv run manage.py migrate
 uv run manage.py runserver
 ```
 
