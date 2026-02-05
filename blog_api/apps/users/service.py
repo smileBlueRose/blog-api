@@ -1,6 +1,7 @@
+from logging import getLogger
 from typing import Any, Iterable
 
-from common.get_required_field import get_required_field
+from common.get_required_field import require_field
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
 from settings.conf import settings
@@ -8,6 +9,8 @@ from zxcvbn import zxcvbn
 
 from .exceptions import UserAlreadyExists
 from .models import User
+
+logger = getLogger(__name__)
 
 email_validator = EmailValidator()
 
@@ -22,18 +25,29 @@ class UserService:
             ValueError: might be raised by sanitize_data()
         """
         fields = ["email", "password", "first_name", "last_name"]
-        schema: dict[str, str] = {i: str(get_required_field(data, i)) for i in fields}
+        schema: dict[str, str] = {i: str(require_field(data, i)) for i in fields}
+        logger.debug(
+            "email: %s, first_name: %s, last_name: %s",
+            schema["email"],
+            schema["first_name"],
+            schema["last_name"],
+        )
 
         email_validator(value=schema["email"])
+        logger.debug("Email validated")
 
         self._check_email_available(email=schema["email"])
+        logger.debug("Email available")
+
         self._validate_first_name(value=schema["first_name"])
         self._validate_last_name(value=schema["last_name"])
+        logger.debug("first_name and last_name validated")
 
         self._validate_password(
             password=schema["password"],
             user_inputs=[v for k, v in schema.items() if k != "password"],
         )
+        logger.debug("Password validated")
 
         user = User.objects.create_user(
             email=schema["email"],

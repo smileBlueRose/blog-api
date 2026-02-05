@@ -20,6 +20,9 @@ DJANGO_APPS = [
 ]
 PROJECT_APPS = [
     "apps.users.apps.UsersConfig",
+    "apps.posts.apps.PostsConfig",
+    "apps.categories.apps.CategoriesConfig",
+    "apps.comments.apps.CommentsConfig",
 ]
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS
 
@@ -31,6 +34,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "middleware.requests.RequestIDMiddleware",
 ]
 
 ROOT_URLCONF = "settings.urls"
@@ -94,7 +98,8 @@ AUTH_PASSWORD_VALIDATORS = [
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
-    )
+    ),
+    "EXCEPTION_HANDLER": "middleware.exception_handlers.custom_exception_handler",
 }
 
 
@@ -110,3 +115,115 @@ MEDIA_ROOT = PROJECT_DIR / "media"
 MEDIA_URL = "/media/"
 
 AUTH_USER_MODEL = "users.User"
+
+LOG_DIR = BASE_DIR / "logs"
+DEBUG_LOG_PATH = LOG_DIR / "debug.log"
+INFO_LOG_PATH = LOG_DIR / "info.log"
+WARNING_LOG_PATH = LOG_DIR / "warning.log"
+ERROR_LOG_PATH = LOG_DIR / "error.log"
+CRITICAL_LOG_PATH = LOG_DIR / "critical.log"
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{asctime} |{name:36s}|:{lineno:<4d} "
+            "[{levelname:8s}] <{request_id:36s}> - {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "[{levelname:8s}] - {message}",
+            "style": "{",
+        },
+    },
+    "filters": {
+        "request_id": {
+            "()": "settings.logger.RequestIDFilter",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",
+            "formatter": "simple",
+            "filters": ["request_id"],
+        },
+        "debug_file": {
+            "level": "DEBUG",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": DEBUG_LOG_PATH,
+            "formatter": "verbose",
+            "maxBytes": 50 * 1024**2,
+            "backupCount": 5,
+            "filters": ["request_id"],
+        },
+        "info_file": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": INFO_LOG_PATH,
+            "formatter": "verbose",
+            "maxBytes": 10 * 1024**2,
+            "backupCount": 10,
+            "filters": ["request_id"],
+        },
+        "warning_file": {
+            "level": "WARNING",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": WARNING_LOG_PATH,
+            "formatter": "verbose",
+            "maxBytes": 5 * 1024**2,
+            "backupCount": 3,
+            "filters": ["request_id"],
+        },
+        "error_file": {
+            "level": "ERROR",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": ERROR_LOG_PATH,
+            "formatter": "verbose",
+            "maxBytes": 5 * 1024**2,
+            "backupCount": 3,
+            "filters": ["request_id"],
+        },
+        "critical_file": {
+            "level": "CRITICAL",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": CRITICAL_LOG_PATH,
+            "formatter": "verbose",
+            "maxBytes": 5 * 1024**2,
+            "backupCount": 3,
+            "filters": ["request_id"],
+        },
+    },
+    "loggers": {
+        "django.utils.autoreload": {
+            "level": "WARNING",
+            "propagate": False,
+        },
+        "django": {
+            "handlers": [
+                "console",
+                "debug_file",
+                "info_file",
+                "warning_file",
+                "error_file",
+                "critical_file",
+            ],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+    "root": {
+        "handlers": [
+            "console",
+            "debug_file",
+            "info_file",
+            "warning_file",
+            "error_file",
+            "critical_file",
+        ],
+        "level": settings.log.level,
+    },
+}

@@ -20,3 +20,6 @@ wheels/
 *.sqlite3
 *.sql
 
+
+# Logs
+logs/

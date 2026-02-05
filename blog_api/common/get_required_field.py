@@ -3,7 +3,7 @@ from typing import Any
 from .exceptions import MissingRequiredField
 
 
-def get_required_field(data: dict[str, Any], field: str) -> Any:
+def require_field(data: dict[str, Any], field: str) -> Any:
     """:raises MissingRequiredField:"""
 
     if field not in data:
