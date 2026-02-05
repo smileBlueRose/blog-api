@@ -135,11 +135,21 @@ class Settings:
         debug_allowed = level == "DEBUG"
         info_allowed = level == "INFO"
 
+    class Redis:
+        @property
+        def password(self) -> str:
+            redis_password_path: Path = PROJECT_DIR / config("BLOG_REDIS_PASSWORD_FILE")
+            return redis_password_path.read_text()
+
+        host = "127.0.0.1"
+        port = config("BLOG_REDIS_PORT", cast=int)
+
     users = Users
     db = Database()
     auth = Auth()
     post = Post
     log = Log
+    redis = Redis()
 
 
 settings = Settings()
@@ -153,4 +163,15 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": settings.auth.jwt.refresh_token_lifetime,
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": f"redis://{settings.redis.host}:{settings.redis.port}/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "PASSWORD": settings.redis.password,
+        },
+    }
 }

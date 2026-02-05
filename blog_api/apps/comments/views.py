@@ -4,6 +4,8 @@ from typing import Any, cast
 from apps.posts.models import Post
 from common.get_required_field import require_field
 from common.security import sanitize_html_input
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -25,6 +27,7 @@ class CommentViewSet(ViewSet):
     def _get_post(self, post_slug: str) -> Post:
         return Post.objects.get(slug=post_slug)
 
+    @method_decorator(cache_page(5 * 10, key_prefix="comment_list"))
     def list(self, request: Request, post_slug: str) -> Response:
         limit = int(request.query_params.get("limit", 10))
         offset = int(request.query_params.get("offset", 0))

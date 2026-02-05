@@ -1,6 +1,15 @@
 from pathlib import Path
 
-from .conf import DEBUG, PROJECT_DIR, SECRET_KEY, SIMPLE_JWT, settings  # noqa: F401
+from .conf import (
+    CACHES,
+    DEBUG,
+    PROJECT_DIR,
+    SECRET_KEY,
+    SIMPLE_JWT,
+    settings,
+)
+
+_ = (DEBUG, PROJECT_DIR, SECRET_KEY, SIMPLE_JWT, settings, CACHES)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 

@@ -2,6 +2,8 @@ from logging import getLogger
 from typing import Any, cast
 
 from common.security import sanitize_data
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -24,6 +26,7 @@ class PostViewSet(ViewSet):
     lookup_field = "slug"
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    @method_decorator(cache_page(10 * 60, key_prefix="post_list"))
     def list(self, request: Request) -> Response:
         limit = int(request.query_params.get("limit", 10))
         offset = int(request.query_params.get("offset", 0))
