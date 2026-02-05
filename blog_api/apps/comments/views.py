@@ -30,7 +30,7 @@ class CommentViewSet(ViewSet):
 
     def _clear_cache(self) -> None:
         clear_cache(prefix=settings.redis.prefix.comment_list)
-        logger.debug("Cache cleard, prefix %s", settings.redis.prefix.comment_list)
+        logger.debug("Cache cleared, prefix %r", settings.redis.prefix.comment_list)
 
     @method_decorator(cache_page(60, key_prefix=settings.redis.prefix.comment_list))
     def list(self, request: Request, post_slug: str) -> Response:

@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 from datetime import timedelta
+from enum import StrEnum
 from pathlib import Path
 from typing import Any, Callable, cast
 
+import redis
 from decouple import RepositoryEnv  # type: ignore
 from decouple import config as decouple_config
 
@@ -181,3 +183,15 @@ CACHES = {
         },
     }
 }
+
+redis_client = redis.Redis(
+    host=settings.redis.host,
+    port=settings.redis.port,
+    password=settings.redis.password,
+    db=0,
+)
+pubsub = redis_client.pubsub()
+
+
+class Channels(StrEnum):
+    COMMENTS = "comments"
