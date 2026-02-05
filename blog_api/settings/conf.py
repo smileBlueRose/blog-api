@@ -129,10 +129,17 @@ class Settings:
         title_max_length = 200
         body_max_length = 5000
 
+    class Log:
+        level = config("LOG_LEVEL", default="INFO")
+
+        debug_allowed = level == "DEBUG"
+        info_allowed = level == "INFO"
+
     users = Users
     db = Database()
     auth = Auth()
     post = Post
+    log = Log
 
 
 settings = Settings()

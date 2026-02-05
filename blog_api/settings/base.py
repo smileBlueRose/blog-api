@@ -219,6 +219,6 @@ LOGGING = {
             "error_file",
             "critical_file",
         ],
-        "level": "DEBUG",
+        "level": settings.log.level,
     },
 }

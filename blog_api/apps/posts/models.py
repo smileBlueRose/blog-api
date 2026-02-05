@@ -19,6 +19,7 @@ from .enums import StatusEnum
 
 
 class Post(Model):
+    id: int
     author = ForeignKey(to=User, on_delete=CASCADE)
     title = CharField(max_length=settings.post.title_max_length, null=False)
     slug = AutoSlugField(populate_from="title", unique=True, max_length=250)
