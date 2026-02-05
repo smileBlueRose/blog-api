@@ -22,4 +22,5 @@ wheels/
 
 
 # Logs
-logs/
+*/logs/*
+!*/logs/.gitkeep
