@@ -17,38 +17,21 @@ mv django_secret_key.example django_secret_key
 mv db_password.example db_password
 mv jwt-private.pem.example jwt-private.pem
 mv jwt-public.pem.example jwt-public.pem
+mv redis_password.example redis_password
 cd ..
 ```
+### 3. Run docker compose
+```bash
+sudo docker compose --env-file env_files/.env.template up -d
+```
 
-### 3. Install dependencies
+### 4. Install dependencies
 ```bash
 cd blog_api
 uv sync
 ```
 
-### 4. Run server
+### 5. Run server
 ```bash
-uv run manage.py runserver
-```
-
-## PostgreSQL Setup (Optional)
-
-By default, the project uses SQLite. To use PostgreSQL instead, complete steps 1-3 above, then:
-
-### 4. Enable PostgreSQL engine
-Add `BLOG_DB_ENGINE=postgresql` to `env_files/.env.dev`:
-```bash
-# It's considered you are at blog-api/
-echo "BLOG_DB_ENGINE=postgresql" >> env_files/.env.dev
-```
-
-### 5. Start PostgreSQL container
-```bash
-sudo docker compose --env-file env_files/.env.template up -d
-```
-
-### 6. Run server
-```bash
-cd blog_api
 uv run manage.py runserver
 ```
