@@ -131,7 +131,7 @@ INFO_LOG_PATH = LOG_DIR / "info.log"
 WARNING_LOG_PATH = LOG_DIR / "warning.log"
 ERROR_LOG_PATH = LOG_DIR / "error.log"
 CRITICAL_LOG_PATH = LOG_DIR / "critical.log"
-
+DJANGO_REQUEST_LOG_PATH = LOG_DIR / "django_request.log"
 
 LOGGING = {
     "version": 1,
@@ -146,6 +146,10 @@ LOGGING = {
             "format": "[{levelname:8s}] - {message}",
             "style": "{",
         },
+        "django_request": {
+            "format": "{asctime} [{levelname:8s}] <{request_id:36s}> - {message}",
+            "style": "{",
+        },
     },
     "filters": {
         "request_id": {
@@ -158,6 +162,13 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "stream": "ext://sys.stdout",
             "formatter": "simple",
+            "filters": ["request_id"],
+        },
+        "django_request_file": {
+            "level": "WARNING",
+            "class": "logging.FileHandler",
+            "filename": DJANGO_REQUEST_LOG_PATH,
+            "formatter": "django_request",
             "filters": ["request_id"],
         },
         "debug_file": {
@@ -207,6 +218,11 @@ LOGGING = {
         },
     },
     "loggers": {
+        "django.request": {
+            "handlers": ["django_request_file"],
+            "level": "WARNING",
+            "propagate": False,
+        },
         "django.utils.autoreload": {
             "level": "WARNING",
             "propagate": False,
