@@ -2,6 +2,7 @@ from logging import getLogger
 from typing import Any, cast
 
 from apps.posts.models import Post
+from common.clear_cache import clear_cache
 from common.get_required_field import require_field
 from common.security import sanitize_html_input
 from django.utils.decorators import method_decorator
@@ -27,7 +28,11 @@ class CommentViewSet(ViewSet):
     def _get_post(self, post_slug: str) -> Post:
         return Post.objects.get(slug=post_slug)
 
-    @method_decorator(cache_page(5 * 10, key_prefix="comment_list"))
+    def _clear_cache(self) -> None:
+        clear_cache(prefix=settings.redis.prefix.comment_list)
+        logger.debug("Cache cleard, prefix %s", settings.redis.prefix.comment_list)
+
+    @method_decorator(cache_page(60, key_prefix=settings.redis.prefix.comment_list))
     def list(self, request: Request, post_slug: str) -> Response:
         limit = int(request.query_params.get("limit", 10))
         offset = int(request.query_params.get("offset", 0))
@@ -63,6 +68,8 @@ class CommentViewSet(ViewSet):
         comment = serializer.save(post=self._get_post(post_slug), author=request.user)
         logger.info("Comment added")
 
+        self._clear_cache()
+
         return Response(
             CommentRetrieveSerializer(comment).data, status=HTTP_201_CREATED
         )
@@ -85,6 +92,8 @@ class CommentViewSet(ViewSet):
 
         comment.delete()
         logger.info("Comment deleted")
+
+        self._clear_cache()
 
         return Response(status=HTTP_204_NO_CONTENT)
 
@@ -112,5 +121,7 @@ class CommentViewSet(ViewSet):
         comment.body = body
         comment.save()
         logger.info("Comment updated")
+
+        self._clear_cache()
 
         return Response(status=HTTP_204_NO_CONTENT)
