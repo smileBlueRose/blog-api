@@ -51,6 +51,7 @@ class CommentViewSet(ViewSet):
             )
 
         CommentService.check_permission_to_delete(user=request.user, comment=comment)
+        comment.delete()
 
         return Response(status=HTTP_204_NO_CONTENT)
 
