@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
@@ -65,6 +66,13 @@ class UserManager(BaseUserManager["User"]):
         )
 
 
+def avatar_upload_path(instance: "User", filename: str) -> str:
+    ext = Path(filename).suffix
+    result = settings.users.avatars_dir / (str(instance.id) + ext)
+
+    return str(result)
+
+
 class User(AbstractBaseUser, PermissionsMixin):
     id = UUIDField(primary_key=True, default=uuid4)
 
@@ -76,7 +84,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = BooleanField(default=False, null=False)
 
     date_joined = DateTimeField(default=timezone.now)
-    avatar = ImageField(upload_to=settings.users.avatars_dir, blank=True, null=True)
+    avatar = ImageField(upload_to=avatar_upload_path, blank=True, null=True)
 
     objects: UserManager = UserManager()
 
