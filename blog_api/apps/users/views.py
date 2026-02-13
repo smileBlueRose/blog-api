@@ -1,7 +1,9 @@
 from logging import getLogger
 from typing import Any, cast
 
+from common.get_required_field import require_field
 from common.security import sanitize_data
+from django.core.files.uploadedfile import UploadedFile
 from django.forms import ValidationError
 from django.utils.decorators import method_decorator
 from django_ratelimit.decorators import ratelimit
@@ -11,6 +13,7 @@ from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
+    HTTP_204_NO_CONTENT,
 )
 from rest_framework.viewsets import ViewSet
 from settings.conf import settings
@@ -27,6 +30,9 @@ logger = getLogger(__name__)
 
 
 @method_decorator(ratelimit(key="ip", rate="5/m", method="POST"), name="create")
+@method_decorator(
+    ratelimit(key="ip", rate="5/m", method="PATCH"), name="partial_update"
+)
 class UserViewSet(ViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     lookup_field = "user_id"
@@ -74,3 +80,36 @@ class UserViewSet(ViewSet):
         logger.info("User updated")
 
         return Response(UserRetrieveSerializer(user).data, status=HTTP_200_OK)
+
+
+@method_decorator(
+    ratelimit(key="ip", rate="5/m", method="PATCH"), name="partial_update"
+)
+class AvatarViewSet(ViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def partial_update(self, request: Request) -> Response:
+        # TODO: Make compression of an avatar
+
+        user = request.user
+        logger.info("Updating avatar, user_id: %s", user.id)
+
+        avatar_file: UploadedFile = require_field(
+            cast(dict[str, UploadedFile], request.FILES), field="avatar"
+        )
+        logger.debug(
+            "Avatar size: %d bytes and filename: %r", avatar_file.size, avatar_file.name
+        )
+
+        user_service.validate_avatar(file=avatar_file)
+        logger.debug("Avatar validated")
+
+        if user.avatar:
+            logger.debug("User already has an avatar, deleting old avatar")
+            user.avatar.delete(save=False)
+
+        user.avatar = avatar_file
+        user.save()
+        logger.info("Avatar saved")
+
+        return Response(status=HTTP_204_NO_CONTENT)

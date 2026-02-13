@@ -85,6 +85,10 @@ class Settings:
         first_name_max_length = 50
         last_name_max_length = 50
 
+        avatar_max_size_in_bytes = 5 * 1024 * 1024
+        avatar_max_size_in_megabytes = avatar_max_size_in_bytes / (1024 * 1024)
+        avatar_formats = ["JPEG", "PNG", "WEBP"]
+
     @dataclass
     class Database:
         engine: str = config("BLOG_DB_ENGINE")
@@ -152,6 +156,7 @@ class Settings:
         class Prefix:
             post_list = "post_list"
             comment_list = "comment_list"
+            user_list = "user_list"
 
         prefix = Prefix
 
