@@ -109,6 +109,8 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "EXCEPTION_HANDLER": "middleware.exception_handlers.custom_exception_handler",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 20,
 }
 
 
@@ -160,7 +162,7 @@ LOGGING = {
         "console": {
             "level": "DEBUG",
             "class": "logging.StreamHandler",
-            "stream": "ext://sys.stdout",
+            "stream": "ext://sys.stderr",
             "formatter": "simple",
             "filters": ["request_id"],
         },
@@ -218,6 +220,9 @@ LOGGING = {
         },
     },
     "loggers": {
+        "PIL": {
+            "level": "WARNING",
+        },
         "django.request": {
             "handlers": ["django_request_file"],
             "level": "WARNING",

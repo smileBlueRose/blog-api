@@ -4,13 +4,15 @@ from typing import Any, cast
 from apps.posts.models import Post
 from common.clear_cache import clear_cache
 from common.get_required_field import require_field
+from common.pagination import CustomPagination
 from common.security import sanitize_html_input
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from rest_framework.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from rest_framework.utils.serializer_helpers import ReturnList
 from rest_framework.viewsets import ViewSet
 from settings.conf import settings
 
@@ -24,6 +26,7 @@ logger = getLogger(__name__)
 class CommentViewSet(ViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     lookup_field = "comment_id"
+    paginator = CustomPagination()
 
     def _get_post(self, post_slug: str) -> Post:
         return Post.objects.get(slug=post_slug)
@@ -34,24 +37,20 @@ class CommentViewSet(ViewSet):
 
     @method_decorator(cache_page(60, key_prefix=settings.redis.prefix.comment_list))
     def list(self, request: Request, post_slug: str) -> Response:
-        limit = int(request.query_params.get("limit", 10))
-        offset = int(request.query_params.get("offset", 0))
+        logger.debug("Fetching comments, post_slug: %r", post_slug)
 
-        logger.debug(
-            "Fetching comments, post_slug: %s, limit: %s, offset: %s",
-            post_slug,
-            limit,
-            offset,
+        comments = cast(
+            list[Comment],
+            self.paginator.paginate_queryset(
+                queryset=Comment.objects.filter(post__slug=post_slug), request=request
+            ),
         )
-
-        comments = Comment.objects.filter(post__slug=post_slug)[offset : offset + limit]
 
         if settings.log.debug_allowed:
             logger.debug("Found %s comments", len(comments))
 
-        return Response(
-            CommentRetrieveSerializer(comments, many=True).data, status=HTTP_200_OK
-        )
+        result = cast(ReturnList, CommentRetrieveSerializer(comments, many=True).data)
+        return self.paginator.get_paginated_response(result)
 
     def create(self, request: Request, post_slug: str) -> Response:
         logger.info("Adding comment, post_slug: %r", post_slug)
@@ -59,7 +58,7 @@ class CommentViewSet(ViewSet):
         body: str = sanitize_html_input(
             require_field(cast(dict[str, Any], request.data), "body")
         )
-        logger.debug("body: %s", body)
+        logger.debug("body: %r", body)
 
         serializer = CommentCreateSerializer(data={"body": body})
         serializer.is_valid(raise_exception=True)

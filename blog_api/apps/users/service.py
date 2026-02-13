@@ -3,7 +3,9 @@ from typing import Any, Iterable
 
 from common.get_required_field import require_field
 from django.core.exceptions import ValidationError
+from django.core.files.base import File
 from django.core.validators import EmailValidator
+from PIL import Image, UnidentifiedImageError
 from settings.conf import settings
 from zxcvbn import zxcvbn
 
@@ -117,6 +119,27 @@ class UserService:
             raise ValidationError(
                 "Last name must not exceed "
                 f"{settings.users.last_name_max_length} characters"
+            )
+
+    def validate_avatar(self, file: File) -> None:
+        """Validates avatar size and format."""
+        if file.size > settings.users.avatar_max_size_in_bytes:
+            raise ValidationError(
+                "Avatar size exceeds maximum allowed size of "
+                f"{settings.users.avatar_max_size_in_megabytes}MB"
+            )
+
+        try:
+            image = Image.open(file)
+            image.verify()
+            file.seek(0)
+        except UnidentifiedImageError:
+            raise ValidationError(f"File '{file.name}' is invalid avatar file")
+
+        if image.format not in settings.users.avatar_formats:
+            raise ValidationError(
+                f"Invalid format '{image.format}', "
+                f"allowed: {settings.users.avatar_formats}"
             )
 
 
