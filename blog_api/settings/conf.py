@@ -12,7 +12,6 @@ PROJECT_DIR = Path(__file__).resolve().parent.parent.parent
 ENV_FILES_DIR = PROJECT_DIR / "env_files"
 
 environment: str = cast(str, decouple_config("ENV", default="dev"))
-
 env_template_path = ENV_FILES_DIR / ".env.template"
 
 if environment == "dev":
@@ -104,8 +103,12 @@ class Settings:
     class Auth:
         @dataclass
         class JWT:
-            access_token_lifetime = timedelta(minutes=15)
-            refresh_token_lifetime = timedelta(days=15)
+            access_token_lifetime = timedelta(
+                seconds=config("BLOG_JWT_ACCESS_LIFETIME", cast=int)
+            )
+            refresh_token_lifetime = timedelta(
+                seconds=config("BLOG_JWT_REFRESH_LIFETIME", cast=int)
+            )
 
             @property
             def private_key(self) -> str:
