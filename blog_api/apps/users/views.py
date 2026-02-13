@@ -1,18 +1,26 @@
 from logging import getLogger
+from typing import Any, cast
 
 from common.security import sanitize_data
 from django.forms import ValidationError
 from django.utils.decorators import method_decorator
 from django_ratelimit.decorators import ratelimit
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.status import (
+    HTTP_200_OK,
     HTTP_201_CREATED,
 )
 from rest_framework.viewsets import ViewSet
+from settings.conf import settings
 
 from .models import User
-from .serializers import UserCreateSerializer, UserRetrieveSerializer
+from .serializers import (
+    UserCreateSerializer,
+    UserRetrieveSerializer,
+    UserUpdateSerializer,
+)
 from .service import user_service
 
 logger = getLogger(__name__)
@@ -20,6 +28,7 @@ logger = getLogger(__name__)
 
 @method_decorator(ratelimit(key="ip", rate="5/m", method="POST"), name="create")
 class UserViewSet(ViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     lookup_field = "user_id"
 
     def retrieve(self, _: Request, user_id: str) -> Response:
@@ -43,3 +52,25 @@ class UserViewSet(ViewSet):
 
         logger.info("User created")
         return Response(UserCreateSerializer(user).data, status=HTTP_201_CREATED)
+
+    def partial_update(self, request: Request) -> Response:
+        assert isinstance(request.user, User), "request.user type is not models.User"
+        user = request.user
+
+        logger.info("Updating user, user_id: %s", user.id)
+
+        if settings.log.debug_allowed:
+            logger.debug("data: %s", str(request.data)[:200])
+
+        cleaned_data = sanitize_data(cast(dict[str, Any], request.data))
+
+        serializer = UserUpdateSerializer(
+            instance=user, data=cleaned_data, partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        logger.debug("Data validated, start saving")
+
+        user = serializer.save()
+        logger.info("User updated")
+
+        return Response(UserRetrieveSerializer(user).data, status=HTTP_200_OK)

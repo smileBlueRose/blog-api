@@ -14,6 +14,15 @@ class UserCreateSerializer(ModelSerializer):
         )
 
 
+class UserUpdateSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            "first_name",
+            "last_name",
+        )
+
+
 class UserRetrieveSerializer(ModelSerializer):
     class Meta:
         model = User

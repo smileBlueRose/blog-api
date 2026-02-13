@@ -58,7 +58,7 @@ class CommentViewSet(ViewSet):
         body: str = sanitize_html_input(
             require_field(cast(dict[str, Any], request.data), "body")
         )
-        logger.debug("body: %s", body)
+        logger.debug("body: %r", body)
 
         serializer = CommentCreateSerializer(data={"body": body})
         serializer.is_valid(raise_exception=True)

@@ -7,5 +7,6 @@ router = DefaultRouter()
 router.register("", UserViewSet, basename="user")
 
 urlpatterns = [
+    path("users/me/", UserViewSet.as_view({"patch": "partial_update"})),
     path("users/", include(router.urls)),
 ]
