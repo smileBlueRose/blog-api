@@ -220,6 +220,9 @@ LOGGING = {
         },
     },
     "loggers": {
+        "PIL": {
+            "level": "WARNING",
+        },
         "django.request": {
             "handlers": ["django_request_file"],
             "level": "WARNING",
