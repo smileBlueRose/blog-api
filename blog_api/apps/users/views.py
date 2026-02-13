@@ -7,7 +7,7 @@ from django.core.files.uploadedfile import UploadedFile
 from django.forms import ValidationError
 from django.utils.decorators import method_decorator
 from django_ratelimit.decorators import ratelimit
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny, BasePermission
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.status import (
@@ -37,6 +37,12 @@ logger = getLogger(__name__)
 class UserViewSet(ViewSet):
     lookup_field = "user_id"
 
+    def get_permissions(self) -> list[BasePermission]:
+        if self.action == 'partial_update':
+            return [IsAuthenticated()]
+        return [AllowAny()]
+    
+
     def retrieve(self, _: Request, user_id: str) -> Response:
         logger.info("Retrieve user with user_id: %s", user_id)
 
@@ -59,7 +65,6 @@ class UserViewSet(ViewSet):
         logger.info("User created")
         return Response(UserCreateSerializer(user).data, status=HTTP_201_CREATED)
     
-    @action(detail=False, methods=['patch'], permission_classes=[IsAuthenticated])
     def partial_update(self, request: Request) -> Response:
         assert isinstance(request.user, User), "request.user type is not models.User"
         user = request.user
