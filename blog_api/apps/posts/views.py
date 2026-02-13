@@ -2,6 +2,7 @@ from logging import getLogger
 from typing import Any, cast
 
 from common.clear_cache import clear_cache
+from common.pagination import CustomPagination
 from common.security import sanitize_data
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
@@ -28,6 +29,7 @@ logger = getLogger(__name__)
 class PostViewSet(ViewSet):
     lookup_field = "slug"
     permission_classes = [IsAuthenticatedOrReadOnly]
+    paginator = CustomPagination()
 
     def _clear_cache(self) -> None:
         clear_cache(settings.redis.prefix.post_list)
@@ -35,18 +37,18 @@ class PostViewSet(ViewSet):
 
     @method_decorator(cache_page(60, key_prefix=settings.redis.prefix.post_list))
     def list(self, request: Request) -> Response:
-        limit = int(request.query_params.get("limit", 10))
-        offset = int(request.query_params.get("offset", 0))
-        logger.debug("Fetching posts, limit: %d, offset: %d", limit, offset)
-
-        posts = Post.objects.all()[offset : offset + limit]
+        posts = cast(
+            list[Post],
+            self.paginator.paginate_queryset(Post.objects.all(), request=request),
+        )
 
         if settings.log.debug_allowed:
             logger.debug("Found %d posts", len(posts))
 
-        return Response(PostRetrieveSerializer(posts, many=True).data, HTTP_200_OK)
+        result = PostRetrieveSerializer(posts, many=True).data
+        return self.paginator.get_paginated_response(result)
 
-    def retrieve(self, request: Request, slug: str) -> Response:
+    def retrieve(self, _: Request, slug: str) -> Response:
         logger.debug("Fetching post, slug: %r", slug)
         post = Post.objects.get(slug=slug)
 
