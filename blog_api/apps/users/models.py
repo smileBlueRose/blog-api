@@ -16,6 +16,7 @@ from django.db.models import (
     UUIDField,
 )
 from django.utils import timezone
+
 from settings.conf import settings
 
 

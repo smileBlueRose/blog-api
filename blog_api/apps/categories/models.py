@@ -1,4 +1,5 @@
 from autoslug import AutoSlugField
+
 from django.db.models import CharField, Model
 
 

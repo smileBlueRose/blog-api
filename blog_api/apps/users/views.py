@@ -1,8 +1,6 @@
 from logging import getLogger
 from typing import Any, cast
 
-from common.get_required_field import require_field
-from common.security import sanitize_data
 from django.core.files.uploadedfile import UploadedFile
 from django.forms import ValidationError
 from django.utils.decorators import method_decorator
@@ -21,6 +19,9 @@ from rest_framework.status import (
     HTTP_204_NO_CONTENT,
 )
 from rest_framework.viewsets import ViewSet
+
+from common.get_required_field import require_field
+from common.security import sanitize_data
 from settings.conf import settings
 
 from .models import User

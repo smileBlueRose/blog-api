@@ -1,8 +1,6 @@
 from logging import getLogger
 from typing import Any
 
-from apps.users.exceptions import UserAlreadyExists
-from common.exceptions import MissingRequiredField, PermissionException
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import ValidationError
 from django_ratelimit.exceptions import Ratelimited
@@ -16,6 +14,9 @@ from rest_framework.status import (
     HTTP_429_TOO_MANY_REQUESTS,
 )
 from rest_framework.views import exception_handler
+
+from apps.users.exceptions import UserAlreadyExists
+from common.exceptions import MissingRequiredField, PermissionException
 
 logger = getLogger(__name__)
 

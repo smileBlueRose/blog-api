@@ -1,8 +1,9 @@
-from apps.categories.models import Category
 from rest_framework.serializers import (
     ModelSerializer,
     PrimaryKeyRelatedField,
 )
+
+from apps.categories.models import Category
 
 from .models import Post
 

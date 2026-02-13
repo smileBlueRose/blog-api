@@ -1,9 +1,6 @@
 from logging import getLogger
 from typing import Any, cast
 
-from common.clear_cache import clear_cache
-from common.pagination import CustomPagination
-from common.security import sanitize_data
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django_ratelimit.decorators import ratelimit
@@ -16,6 +13,10 @@ from rest_framework.status import (
     HTTP_204_NO_CONTENT,
 )
 from rest_framework.viewsets import ViewSet
+
+from common.clear_cache import clear_cache
+from common.pagination import CustomPagination
+from common.security import sanitize_data
 from settings.base import settings
 
 from .models import Post

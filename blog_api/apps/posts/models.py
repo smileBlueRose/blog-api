@@ -1,7 +1,7 @@
 from typing import ClassVar, Self
 
-from apps.users.models import User
 from autoslug import AutoSlugField
+
 from django.db.models import (
     CASCADE,
     SET_NULL,
@@ -13,6 +13,8 @@ from django.db.models import (
     TextField,
 )
 from django.utils import timezone
+
+from apps.users.models import User
 from settings.conf import settings
 
 from .enums import StatusEnum
