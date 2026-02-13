@@ -11,7 +11,8 @@ from rest_framework.status import (
 )
 from rest_framework.viewsets import ViewSet
 
-from .serializers import UserSerializer
+from .models import User
+from .serializers import UserCreateSerializer, UserRetrieveSerializer
 from .service import user_service
 
 logger = getLogger(__name__)
@@ -19,6 +20,14 @@ logger = getLogger(__name__)
 
 @method_decorator(ratelimit(key="ip", rate="5/m", method="POST"), name="create")
 class UserViewSet(ViewSet):
+    lookup_field = "user_id"
+
+    def retrieve(self, _: Request, user_id: str) -> Response:
+        logger.info("Retrieve user with user_id: %s", user_id)
+
+        user = User.objects.get(id=user_id)
+        return Response(UserRetrieveSerializer(user).data)
+
     def create(self, request: Request) -> Response:
         logger.info("Creating user")
 
@@ -33,4 +42,4 @@ class UserViewSet(ViewSet):
         user = user_service.create_user(cleaned_data)
 
         logger.info("User created")
-        return Response(UserSerializer(user).data, status=HTTP_201_CREATED)
+        return Response(UserCreateSerializer(user).data, status=HTTP_201_CREATED)
