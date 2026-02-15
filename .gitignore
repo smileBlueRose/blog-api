@@ -22,8 +22,8 @@ wheels/
 
 
 # Logs
-*/logs/*
-!*/logs/.gitkeep
+logs/*
+!logs/.gitkeep
 
 # Media
 /media/*

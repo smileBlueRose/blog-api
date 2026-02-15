@@ -7,6 +7,8 @@ from zxcvbn import zxcvbn
 from django.core.exceptions import ValidationError
 from django.core.files.base import File
 from django.core.validators import EmailValidator
+from PIL import Image, UnidentifiedImageError
+from zxcvbn import zxcvbn
 
 from common.get_required_field import require_field
 from settings.conf import settings

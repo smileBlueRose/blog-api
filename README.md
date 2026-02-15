@@ -6,8 +6,8 @@
 
 ### 1. Clone repository
 ```bash
-git clone https://github.com/smileBlueRose/blog-api
-cd blog-api
+git clone https://github.com/smileBlueRose/blog_api
+cd blog_api
 ```
 
 ### 2. Rename secret files
@@ -27,7 +27,6 @@ sudo docker compose --env-file env_files/.env.template up -d
 
 ### 4. Install dependencies
 ```bash
-cd blog_api
 uv sync
 ```
 

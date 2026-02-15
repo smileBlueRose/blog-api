@@ -1,17 +1,14 @@
-from pathlib import Path
-
 from .conf import (
+    BASE_DIR,
     CACHES,
     DEBUG,
-    PROJECT_DIR,
     SECRET_KEY,
     SIMPLE_JWT,
     settings,
 )
 
-_ = (DEBUG, PROJECT_DIR, SECRET_KEY, SIMPLE_JWT, settings, CACHES)
+_ = (DEBUG, BASE_DIR, SECRET_KEY, SIMPLE_JWT, settings, CACHES)
 
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 ALLOWED_HOSTS: list[str] = []
 
@@ -122,7 +119,7 @@ USE_I18N = True
 USE_TZ = True
 STATIC_URL = "static/"
 
-MEDIA_ROOT = PROJECT_DIR / "media"
+MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"
 
 AUTH_USER_MODEL = "users.User"
