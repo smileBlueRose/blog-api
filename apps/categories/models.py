@@ -1,6 +1,7 @@
 from typing import ClassVar, Self
 
 from autoslug import AutoSlugField
+
 from django.db.models import CharField, Manager, Model
 
 

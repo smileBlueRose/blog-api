@@ -1,4 +1,5 @@
 from .conf import (
+    ALLOWED_HOSTS,
     BASE_DIR,
     CACHES,
     DEBUG,
@@ -7,10 +8,8 @@ from .conf import (
     settings,
 )
 
-_ = (DEBUG, BASE_DIR, SECRET_KEY, SIMPLE_JWT, settings, CACHES)
 
-
-ALLOWED_HOSTS: list[str] = []
+_ = (DEBUG, BASE_DIR, ALLOWED_HOSTS, SECRET_KEY, SIMPLE_JWT, settings, CACHES)
 
 
 DJANGO_APPS = [

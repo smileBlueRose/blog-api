@@ -6,9 +6,6 @@ from django.forms import ValidationError
 from django.utils.decorators import method_decorator
 from django_ratelimit.decorators import ratelimit
 from rest_framework.permissions import (
-    AllowAny,
-    BasePermission,
-    IsAuthenticated,
     IsAuthenticatedOrReadOnly,
 )
 from rest_framework.request import Request
