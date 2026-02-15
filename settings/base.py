@@ -163,7 +163,7 @@ LOGGING = {
             "filters": ["request_id"],
         },
         "django_request_file": {
-            "level": "WARNING",
+            "level": "INFO",
             "class": "logging.FileHandler",
             "filename": DJANGO_REQUEST_LOG_PATH,
             "formatter": "django_request",
@@ -218,27 +218,20 @@ LOGGING = {
     "loggers": {
         "PIL": {
             "level": "WARNING",
-        },
-        "django.request": {
-            "handlers": ["django_request_file"],
-            "level": "WARNING",
-            "propagate": False,
+            "propagate": True,
         },
         "django.utils.autoreload": {
             "level": "WARNING",
+            "propagate": True,
+        },
+        "django.request": {
+            "handlers": ["django_request_file"],
+            "level": "INFO" if DEBUG else "WARNING",
             "propagate": False,
         },
-        "django": {
-            "handlers": [
-                "console",
-                "debug_file",
-                "info_file",
-                "warning_file",
-                "error_file",
-                "critical_file",
-            ],
-            "level": "INFO",
-            "propagate": False,
+        "django.server": {
+            "level": "INFO" if DEBUG else "WARNING",
+            "propagate": True,
         },
     },
     "root": {
