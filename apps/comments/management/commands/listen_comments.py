@@ -3,6 +3,7 @@ from logging import getLogger
 from typing import Any
 
 from django.core.management.base import BaseCommand
+
 from settings.conf import Channels, pubsub
 
 logger = getLogger(__name__)

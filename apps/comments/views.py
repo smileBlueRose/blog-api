@@ -1,11 +1,6 @@
 from logging import getLogger
 from typing import Any, cast
 
-from apps.posts.models import Post
-from common.clear_cache import clear_cache
-from common.get_required_field import require_field
-from common.pagination import CustomPagination
-from common.security import sanitize_html_input
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -14,6 +9,12 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from rest_framework.utils.serializer_helpers import ReturnList
 from rest_framework.viewsets import ViewSet
+
+from apps.posts.models import Post
+from common.clear_cache import clear_cache
+from common.get_required_field import require_field
+from common.pagination import CustomPagination
+from common.security import sanitize_html_input
 from settings.conf import settings
 
 from .models import Comment

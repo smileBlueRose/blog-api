@@ -8,8 +8,8 @@ import redis
 from decouple import RepositoryEnv  # type: ignore
 from decouple import config as decouple_config
 
-PROJECT_DIR = Path(__file__).resolve().parent.parent.parent
-ENV_FILES_DIR = PROJECT_DIR / "env_files"
+BASE_DIR = Path(__file__).resolve().parent.parent
+ENV_FILES_DIR = BASE_DIR / "env_files"
 
 environment: str = cast(str, decouple_config("ENV", default="dev"))
 env_template_path = ENV_FILES_DIR / ".env.template"
@@ -62,7 +62,7 @@ def config(
     return result
 
 
-secret_key_path: str = PROJECT_DIR / config("SECRET_KEY_PATH")
+secret_key_path: str = BASE_DIR / config("SECRET_KEY_PATH")
 
 SECRET_KEY: str = Path(secret_key_path).read_text()
 DEBUG: bool = config(
@@ -100,7 +100,7 @@ class Settings:
 
         @property
         def password(self) -> str:
-            password_file = PROJECT_DIR / Path(config("BLOG_DB_PASSWORD_FILE"))
+            password_file = BASE_DIR / Path(config("BLOG_DB_PASSWORD_FILE"))
             return password_file.read_text()
 
     @dataclass
@@ -116,14 +116,12 @@ class Settings:
 
             @property
             def private_key(self) -> str:
-                private_key_path: Path = PROJECT_DIR / config(
-                    "BLOG_JWT_PRIVATE_KEY_PATH"
-                )
+                private_key_path: Path = BASE_DIR / config("BLOG_JWT_PRIVATE_KEY_PATH")
                 return private_key_path.read_text()
 
             @property
             def public_key(self) -> str:
-                public_key_path: Path = PROJECT_DIR / config("BLOG_JWT_PUBLIC_KEY_PATH")
+                public_key_path: Path = BASE_DIR / config("BLOG_JWT_PUBLIC_KEY_PATH")
                 return public_key_path.read_text()
 
         class Password:
@@ -147,7 +145,7 @@ class Settings:
     class Redis:
         @property
         def password(self) -> str:
-            redis_password_path: Path = PROJECT_DIR / config("BLOG_REDIS_PASSWORD_FILE")
+            redis_password_path: Path = BASE_DIR / config("BLOG_REDIS_PASSWORD_FILE")
             return redis_password_path.read_text()
 
         host = "127.0.0.1"

@@ -1,5 +1,7 @@
+from typing import ClassVar, Self
+
 from autoslug import AutoSlugField
-from django.db.models import CharField, Model
+from django.db.models import CharField, Manager, Model
 
 
 class Category(Model):
@@ -10,3 +12,5 @@ class Category(Model):
         db_table = "categories"
         verbose_name = "category"
         verbose_name_plural = "categories"
+
+    objects: ClassVar[Manager[Self]]

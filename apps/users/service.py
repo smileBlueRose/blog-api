@@ -1,13 +1,14 @@
 from logging import getLogger
 from typing import Any, Iterable
 
-from common.get_required_field import require_field
 from django.core.exceptions import ValidationError
 from django.core.files.base import File
 from django.core.validators import EmailValidator
 from PIL import Image, UnidentifiedImageError
-from settings.conf import settings
 from zxcvbn import zxcvbn
+
+from common.get_required_field import require_field
+from settings.conf import settings
 
 from .exceptions import UserAlreadyExists
 from .models import User
