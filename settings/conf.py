@@ -68,7 +68,7 @@ SECRET_KEY: str = Path(secret_key_path).read_text()
 DEBUG: bool = config(
     "DEBUG", default=False, cast=lambda x: x.lower() in ("true", "yes", "1")
 )
-
+ALLOWED_HOSTS: list[str] = config("ALLOWED_HOSTS", default="localhost").split(",")
 
 # ==============================
 # ==== Application Settings ====
