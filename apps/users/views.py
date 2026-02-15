@@ -31,19 +31,7 @@ logger = getLogger(__name__)
 
 
 @method_decorator(ratelimit(key="ip", rate="5/m", method="POST"), name="create")
-@method_decorator(
-    ratelimit(key="ip", rate="5/m", method="PATCH"), name="partial_update"
-)
-class UserViewSet(ViewSet):
-    permission_classes = [IsAuthenticatedOrReadOnly]
-    lookup_field = "user_id"
-
-    def retrieve(self, _: Request, user_id: str) -> Response:
-        logger.info("Retrieve user with user_id: %s", user_id)
-
-        user = User.objects.get(id=user_id)
-        return Response(UserRetrieveSerializer(user).data)
-
+class RegisterViewSet(ViewSet):
     def create(self, request: Request) -> Response:
         logger.info("Creating user")
 
@@ -59,6 +47,20 @@ class UserViewSet(ViewSet):
 
         logger.info("User created")
         return Response(UserCreateSerializer(user).data, status=HTTP_201_CREATED)
+
+
+@method_decorator(
+    ratelimit(key="ip", rate="5/m", method="PATCH"), name="partial_update"
+)
+class UserViewSet(ViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    lookup_field = "user_id"
+
+    def retrieve(self, _: Request, user_id: str) -> Response:
+        logger.info("Retrieve user with user_id: %s", user_id)
+
+        user = User.objects.get(id=user_id)
+        return Response(UserRetrieveSerializer(user).data)
 
     def partial_update(self, request: Request) -> Response:
         assert isinstance(request.user, User), "request.user type is not models.User"
